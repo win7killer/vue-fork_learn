@@ -316,6 +316,12 @@ function createWatcher (
   return vm.$watch(expOrFn, handler, options)
 }
 
+
+
+/**
+ * - 先处理 $data && $props 监听
+ * - 定义 $set、$delete、$watch
+ */
 export function stateMixin (Vue: Class<Component>) {
   // flow somehow has problems with directly declared definition object
   // when using Object.defineProperty, so we have to procedurally build up
@@ -324,18 +330,18 @@ export function stateMixin (Vue: Class<Component>) {
   dataDef.get = function () { return this._data }
   const propsDef = {}
   propsDef.get = function () { return this._props }
-  if (process.env.NODE_ENV !== 'production') {
-    dataDef.set = function () {
-      warn(
-        'Avoid replacing instance root $data. ' +
-        'Use nested data properties instead.',
-        this
-      )
-    }
-    propsDef.set = function () {
-      warn(`$props is readonly.`, this)
-    }
-  }
+  // if (process.env.NODE_ENV !== 'production') {
+  //   dataDef.set = function () {
+  //     warn(
+  //       'Avoid replacing instance root $data. ' +
+  //       'Use nested data properties instead.',
+  //       this
+  //     )
+  //   }
+  //   propsDef.set = function () {
+  //     warn(`$props is readonly.`, this)
+  //   }
+  // }
   Object.defineProperty(Vue.prototype, '$data', dataDef)
   Object.defineProperty(Vue.prototype, '$props', propsDef)
 

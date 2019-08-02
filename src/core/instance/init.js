@@ -54,6 +54,43 @@ export function initMixin (Vue: Class<Component>) {
     initRender(vm)
     callHook(vm, 'beforeCreate')
     initInjections(vm) // resolve injections before data/props
+
+/**
+ * @initState 做了什么
+ * - vm._watchers
+ * - initProps
+ * - initMethods
+ * - initData || observe(vm._data = {}, true) // 就是挂载 RootData
+ * - initComputed
+ * - initWatch
+ */
+
+/**
+ * @initProps
+ *
+ */
+
+/**
+ * @initMethods
+ *
+ */
+
+/**
+ * @initData
+ *
+ */
+
+/**
+ * @observe (vm._data = {}, true)
+ */
+
+/**
+ * @initComputed
+ */
+
+/**
+ * @initWatch
+ */
     initState(vm)
     initProvide(vm) // resolve provide after data/props
     callHook(vm, 'created')
