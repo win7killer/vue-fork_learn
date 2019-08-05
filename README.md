@@ -13,11 +13,18 @@
 
 <h2 align="center">Supporting Vue.js</h2>
 
+---------------------
+`看我看我：这个分支，是用来学习 Vue 源码的，请勿 fork && pull request. 也不要用于开发。 --- win7killer@163.com`
+
+---------------------
+
 Vue.js is an MIT-licensed open source project with its ongoing development made possible entirely by the support of these awesome [backers](https://github.com/vuejs/vue/blob/dev/BACKERS.md). If you'd like to join them, please consider:
 
 - [Become a backer or sponsor on Patreon](https://www.patreon.com/evanyou).
 - [Become a backer or sponsor on Open Collective](https://opencollective.com/vuejs).
 - [One-time donation via PayPal or crypto-currencies.](https://vuejs.org/support-vuejs/#One-time-Donations)
+
+
 
 #### What's the difference between Patreon and OpenCollective?
 
@@ -31,7 +38,7 @@ Funds donated via Patreon go directly to support Evan You's full-time work on Vu
     <img width="260px" src="https://raw.githubusercontent.com/vuejs/vuejs.org/master/themes/vue/source/images/stdlib.png">
   </a>
 </p>
-  
+
 <!--special end-->
 
 <h3 align="center">Platinum Sponsors</h3>
