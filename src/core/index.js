@@ -4,6 +4,7 @@
 import Vue from './instance/index'
 
 
+
 /** 非重点 */
 import { initGlobalAPI } from './global-api/index'
 import { isServerRendering } from 'core/util/env'

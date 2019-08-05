@@ -318,7 +318,9 @@ function createWatcher (
 
 
 
+
 /**
+ * @stateMixin
  * - 先处理 $data && $props 监听
  * - 定义 $set、$delete、$watch
  */

@@ -1,6 +1,7 @@
 /**
  * ------------------ Vue 真身 ---------------------
  */
+
 import { initMixin } from './init'
 import { stateMixin } from './state'
 import { renderMixin } from './render'
@@ -10,6 +11,7 @@ import { warn } from '../util/index'
 
 // 定义 Vue
 function Vue (options) {
+  // --------------------- new Vue 运行 ----------------------
   if (process.env.NODE_ENV !== 'production' &&
     !(this instanceof Vue)
   ) {
@@ -36,9 +38,31 @@ initMixin(Vue)
 
 stateMixin(Vue)
 
-
+/**
+ * @eventsMixin
+ * - Vue.prototype.$on
+ * - Vue.prototype.$once
+ * - Vue.prototype.$off
+ * - Vue.prototype.$emit
+ * -
+ */
 eventsMixin(Vue)
+
+/**
+ * @lifecycleMixin
+ * - Vue.prototype._update
+ * - Vue.prototype.$forceUpdate
+ * - Vue.prototype.$destroy
+ *
+ */
 lifecycleMixin(Vue)
+
+/**
+ * @renderMixin
+ * - installRenderHelpers()
+ * - Vue.prototype.$nextTick
+ * - Vue.prototype._render
+ */
 renderMixin(Vue)
 
 export default Vue

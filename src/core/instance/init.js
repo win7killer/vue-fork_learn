@@ -1,5 +1,8 @@
 /* @flow */
 
+/**
+ * @initVue
+ */
 import config from '../config'
 import { initProxy } from './proxy'
 import { initState } from './state'
@@ -12,7 +15,39 @@ import { extend, mergeOptions, formatComponentName } from '../util/index'
 
 let uid = 0
 
+/**
+ *
+ * @initMixin
+ * - 挂载 Vue.prototype._init
+ */
 export function initMixin (Vue: Class<Component>) {
+  /**
+   * @_init 运行
+   * - vm._uid
+   * - vm._isVue
+   * - options._isComponent
+   *    ？ initInternalComponent() // 初始化内部组件
+   *    : mergeOptions() // 合并 options
+   * - vm._renderProxy = vm
+   * - vm._self = vm
+   * - initLifecycle(vm)
+   * - initEvents(vm)
+   * - initRender(vm)
+   * - callHook(vm, 'beforeCreate')
+   * - initInjections(vm) // resolve injections before data/props
+   * - initState() : {
+   *    @initState 做了什么
+   *    - vm._watchers
+   *    - initProps()
+   *    - initMethods()
+   *    - initData() || observe(vm._data = {}, true) // 就是挂载 RootData
+   *    - initComputed()
+   *    - initWatch()
+   * }
+   * - initProvide(vm) // resolve provide after data/props
+   * - callHook(vm, 'created')
+   * - $el ? 自动 vm.$mount(vm.$options.el) : 等待手动 vm.$mount(vm.$options.el)
+   */
   Vue.prototype._init = function (options?: Object) {
     const vm: Component = this
     // a uid
@@ -54,7 +89,6 @@ export function initMixin (Vue: Class<Component>) {
     initRender(vm)
     callHook(vm, 'beforeCreate')
     initInjections(vm) // resolve injections before data/props
-
 /**
  * @initState 做了什么
  * - vm._watchers
@@ -108,9 +142,18 @@ export function initMixin (Vue: Class<Component>) {
   }
 }
 
+
+/**
+ * @initInternalComponent 运行 【构建组件的时候执行】
+ * - opts = vm.$options = Object.create(vm.constructor.options)
+ * -
+ */
 export function initInternalComponent (vm: Component, options: InternalComponentOptions) {
+  // 继承 vue 构造函数的 options
   const opts = vm.$options = Object.create(vm.constructor.options)
   // doing this because it's faster than dynamic enumeration.
+  // 这样做比动态枚举速度快
+  // opts 挂载组件 options 的 parent 、 _parentVnode
   const parentVnode = options._parentVnode
   opts.parent = options.parent
   opts._parentVnode = parentVnode
@@ -127,9 +170,13 @@ export function initInternalComponent (vm: Component, options: InternalComponent
   }
 }
 
+
+/**
+ * @resolveConstructorOptions Vue 初始化 root 节点执行
+ */
 export function resolveConstructorOptions (Ctor: Class<Component>) {
   let options = Ctor.options
-  if (Ctor.super) {
+  if (Ctor.super) { // ---------------------------------------  判断是 Vue 构造函数 ？？？？？？？
     const superOptions = resolveConstructorOptions(Ctor.super)
     const cachedSuperOptions = Ctor.superOptions
     if (superOptions !== cachedSuperOptions) {
