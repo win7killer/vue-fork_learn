@@ -16,6 +16,16 @@ import VNode, { createEmptyVNode } from '../vdom/vnode'
 
 import { isUpdatingChildComponent } from './lifecycle'
 
+/**
+ * @initRender
+ * - vm.$vnode = options._parentVnode
+ * - vm.$slots = resolveSlots() 获取对应的$slots
+ * - vm.$scopedSlots = {};
+ * - vm._c;
+ * - vm.$createElement;
+ * - defineReactive() // 父组件传下来的 attrs, listeners，即组件调用是给的 attrs && 事件监听，父子通信的一个关键
+ */
+
 export function initRender (vm: Component) {
   vm._vnode = null // the root of the child tree
   vm._staticTrees = null // v-once cached trees
@@ -46,7 +56,9 @@ export function initRender (vm: Component) {
       !isUpdatingChildComponent && warn(`$listeners is readonly.`, vm)
     }, true)
   } else {
+    // 绑定父组件传进来的 attrS 到 vm.$attrs,
     defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, null, true)
+    // 绑定父组件传进来的 listeners 到 vm.$listeners
     defineReactive(vm, '$listeners', options._parentListeners || emptyObject, null, true)
   }
 }

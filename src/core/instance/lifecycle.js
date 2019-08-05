@@ -29,6 +29,12 @@ export function setActiveInstance(vm: Component) {
   }
 }
 
+/**
+ * @initLifecycle
+ * - vm.$parent = parent
+ * - vm.$root 到顶层节点，即root vm【Vue 实例】
+ * - 定义 vm.$children、$refs、_watcher、_inactive、_directInactive、_isMounted、_isDestroyed、_isBeingDestroyed
+ */
 export function initLifecycle (vm: Component) {
   const options = vm.$options
 
@@ -47,7 +53,9 @@ export function initLifecycle (vm: Component) {
   vm.$children = []
   vm.$refs = {}
 
+  // 定义挂载的 _watcher
   vm._watcher = null
+  // 生命周期相关的状态变量
   vm._inactive = null
   vm._directInactive = false
   vm._isMounted = false

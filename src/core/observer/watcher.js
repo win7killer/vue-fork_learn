@@ -28,12 +28,12 @@ export default class Watcher {
   expression: string;
   cb: Function;
   id: number;
-  deep: boolean;
-  user: boolean;
-  lazy: boolean;
+  deep: boolean;  // 用户可选参数，是否深度监听数据
+  user: boolean; // 用户通过 $watch【包括 options.watch】 添加的 watcher
+  lazy: boolean; // 一般是给 computed 用
   sync: boolean;
-  dirty: boolean;
-  active: boolean;
+  dirty: boolean; // 从 lazy 取值
+  active: boolean; // 默认 true，false this.run 执行空，不必改变 this.value
   deps: Array<Dep>;
   newDeps: Array<Dep>;
   depIds: SimpleSet;
@@ -72,13 +72,16 @@ export default class Watcher {
     this.newDeps = []
     this.depIds = new Set()
     this.newDepIds = new Set()
+    // 开发环境，展示 function 字符串
     this.expression = process.env.NODE_ENV !== 'production'
       ? expOrFn.toString()
       : ''
     // parse expression for getter
     if (typeof expOrFn === 'function') {
+      // computed 的时候，一定是 function
       this.getter = expOrFn
     } else {
+      // vm._options.watch，key 可以使一个字符串（'a.b.c'）监听 data 或者 props，转换成获取对应数据的 function
       this.getter = parsePath(expOrFn)
       if (!this.getter) {
         this.getter = noop
@@ -184,6 +187,7 @@ export default class Watcher {
         // Deep watchers and watchers on Object/Arrays should fire even
         // when the value is the same, because the value may
         // have mutated.
+        // -------   对象类型，因为是地址引用，所以子项改变后，原来的值也会变化，所以是满足 value === this.value
         isObject(value) ||
         this.deep
       ) {
@@ -207,6 +211,7 @@ export default class Watcher {
    * Evaluate the value of the watcher.
    * This only gets called for lazy watchers.
    */
+  // lazy 的 watcher，主动调用这个方法，开触发 watcher.get()，来更新 watcher.value
   evaluate () {
     this.value = this.get()
     this.dirty = false
@@ -224,6 +229,7 @@ export default class Watcher {
 
   /**
    * Remove self from all dependencies' subscriber list.
+   * 从所有以来的订阅者哪里移除自己。即 dep.subs[i] => watcher
    */
   teardown () {
     if (this.active) {

@@ -50,6 +50,12 @@ export function createFnInvoker (fns: Function | Array<Function>, vm: ?Component
   return invoker
 }
 
+/**
+ * @updateListeners
+ * - event = normalizeEvent(name)
+ * - add(event.name, cur, event.capture, event.passive, event.params) // 绑定事件
+ * - remove() 解绑 old 里边的事件【new 里边已经没了】
+ */
 export function updateListeners (
   on: Object,
   oldOn: Object,

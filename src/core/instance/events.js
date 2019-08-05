@@ -9,6 +9,12 @@ import {
 } from '../util/index'
 import { updateListeners } from '../vdom/helpers/index'
 
+/**
+ * @initEvents
+ * - vm._events = {}
+ * - vm._hasHookEvent;
+ * - 如果父级有绑定 listeners, updateComponentListeners()
+ */
 export function initEvents (vm: Component) {
   vm._events = Object.create(null)
   vm._hasHookEvent = false
@@ -39,6 +45,11 @@ function createOnceHandler (event, fn) {
   }
 }
 
+
+/**
+ * @updateComponentListeners
+ * - updateListeners
+ */
 export function updateComponentListeners (
   vm: Component,
   listeners: Object,
