@@ -67,22 +67,40 @@ function createKeyToOldIdx (children, beginIdx, endIdx) {
   return map
 }
 
+/**
+ * @createPatchFunction
+ * -
+ */
 export function createPatchFunction (backend) {
   let i, j
   const cbs = {}
-
+  /**
+   * - nodeOps: 操作真正 浏览器 dom 的 api '../../platforms/web/runtime/node-ops.js'
+   * - modules = [
+        attrs,
+        klass,
+        events,
+        domProps,
+        style,
+        transition,
+        ref,
+        directives
+      ]
+   */
   const { modules, nodeOps } = backend
-
+  // hooks = ['create', 'activate', 'update', 'remove', 'destroy'] 回调数组初始化
   for (i = 0; i < hooks.length; ++i) {
-    cbs[hooks[i]] = []
+    cbs[hooks[i]] = [] // cbs.create = [];
     for (j = 0; j < modules.length; ++j) {
-      if (isDef(modules[j][hooks[i]])) {
-        cbs[hooks[i]].push(modules[j][hooks[i]])
+      if (isDef(modules[j][hooks[i]])) { // attrs.create
+        cbs[hooks[i]].push(modules[j][hooks[i]]) // cbs.create.push(attrs.create)
       }
     }
   }
 
+  // ssr 处理的时候 elm 是一个 dom 的 element
   function emptyNodeAt (elm) {
+    // tagName, {}, [], indefined, elm[dom element 会被挂载到 VNode实例的elm 属性上边去]
     return new VNode(nodeOps.tagName(elm).toLowerCase(), {}, [], undefined, elm)
   }
 
@@ -122,6 +140,11 @@ export function createPatchFunction (backend) {
 
   let creatingElmInVPre = 0
 
+
+  /**
+   * @createElm
+   * -
+   */
   function createElm (
     vnode,
     insertedVnodeQueue,
@@ -401,6 +424,12 @@ export function createPatchFunction (backend) {
     }
   }
 
+
+
+  /**
+   * @updateChildren
+   * - children 队列对比更新  ！！！！！！important
+   */
   function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
     let oldStartIdx = 0
     let newStartIdx = 0
@@ -498,6 +527,11 @@ export function createPatchFunction (backend) {
     }
   }
 
+
+  /**
+   * @patchVnode
+   * - 打补丁到 VNode   !!!!imporatnt
+   */
   function patchVnode (
     oldVnode,
     vnode,
@@ -696,7 +730,15 @@ export function createPatchFunction (backend) {
       return node.nodeType === (vnode.isComment ? 8 : 3)
     }
   }
-
+  /**
+   * @patch
+   * - oldVnode = emptyNodeAt(oldVnode)
+   * - createElm(vnode, insertedVnodeQueue) // 空装载（可能是组件），创建新的根元素 :
+   * - isPatchable(vnode)
+   * - registerRef(ancestor)
+   * - removeVnodes([oldVnode], 0, 0)   OR   invokeDestroyHook(oldVnode)
+   * - invokeInsertHook(vnode, insertedVnodeQueue, isInitialPatch) // 调用插入挂钩
+   */
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
@@ -706,24 +748,40 @@ export function createPatchFunction (backend) {
     let isInitialPatch = false
     const insertedVnodeQueue = []
 
+    //
     if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
+      // - 空装载（可能是组件），创建新的根元素
       isInitialPatch = true
       createElm(vnode, insertedVnodeQueue)
     } else {
+      // VNode 不存在 nodeType ？---========+++++++++++++++++++++++++++++++++++++++++++++
       const isRealElement = isDef(oldVnode.nodeType)
+      // VNode && 是同一个 VNode 节点。key && tag && ... 多项属相比计较确定是同一个节点
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // patch existing root node
+        // patch 已经存在的 root VNode
+        /*
+            ---------------- diff 更新 ----------------
+        */
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
       } else {
+        /*
+            ---------------- 是一个 dom 的 element 节点， 处理 SSR 相关 dom ------------------
+        */
         if (isRealElement) {
           // mounting to a real element
           // check if this is server-rendered content and if we can perform
           // a successful hydration.
+
+          // - mounting 到浏览器 dom 的 element
+          // 如果是 element 节点 && 是服务端 ssr 渲染出来的【有 SSR_ATTR 相关的属性】
           if (oldVnode.nodeType === 1 && oldVnode.hasAttribute(SSR_ATTR)) {
             oldVnode.removeAttribute(SSR_ATTR)
+            // 需要把 ssr 和 浏览器端的做整合
             hydrating = true
           }
+          // 需要把 ssr 和 浏览器端的做整合
           if (isTrue(hydrating)) {
             if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
               invokeInsertHook(vnode, insertedVnodeQueue, true)
@@ -740,9 +798,13 @@ export function createPatchFunction (backend) {
           }
           // either not server-rendered, or hydration failed.
           // create an empty node and replace it
+
+          // - 创建一个空 VNode？
           oldVnode = emptyNodeAt(oldVnode)
         }
-
+        /*
+            ---------------- diff 更新 ----------------
+        */
         // replacing existing element
         const oldElm = oldVnode.elm
         const parentElm = nodeOps.parentNode(oldElm)

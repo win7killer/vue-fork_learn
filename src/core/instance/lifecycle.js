@@ -72,6 +72,16 @@ export function initLifecycle (vm: Component) {
  *
  */
 export function lifecycleMixin (Vue: Class<Component>) {
+
+/**
+ * @_update
+ * - prevEl = vm.$el // 存上一次的 $el
+ * - prevVnode = vm._vnode // 上一次的 VNode
+ * - restoreActiveInstance = setActiveInstance(vm)
+ * - vm._vnode = vnode
+ * - !prevVnode ？ vm.__patch__(vm.$el, vnode, hydrating, false) : vm.__patch__(prevVnode, vnode)
+ * - __patch__ 在 platforms 中定义，重要方法，最终 指向 `import { createPatchFunction } from 'core/vdom/patch'`
+ */
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el
@@ -82,9 +92,11 @@ export function lifecycleMixin (Vue: Class<Component>) {
     // based on the rendering backend used.
     if (!prevVnode) {
       // initial render
+      // ============= 第一次初始化 render
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates
+      // ============= 更新 VNode && dom
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
     restoreActiveInstance()
@@ -154,6 +166,15 @@ export function lifecycleMixin (Vue: Class<Component>) {
   }
 }
 
+/**
+ * - new Vue
+ * @mountComponent
+ * - vm.$el = el
+ * - vm.$options.render = vm.$options.render || 空的 VNode
+ * - callHook(vm, 'beforeMount')
+ * - updateComponent = () => { vm._update(vm._render(), hydrating) }
+ * - new Watcher()
+ */
 export function mountComponent (
   vm: Component,
   el: ?Element,
@@ -164,6 +185,9 @@ export function mountComponent (
     vm.$options.render = createEmptyVNode
     if (process.env.NODE_ENV !== 'production') {
       /* istanbul ignore if */
+      /**
+       * - -- 如果使用了 template 属性，而且不是# 开头，抛出错误。template 只能在 完整的 Vue.js 里边用。
+       */
       if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') ||
         vm.$options.el || el) {
         warn(
@@ -208,8 +232,21 @@ export function mountComponent (
   }
 
   // we set this to vm._watcher inside the watcher's constructor
-  // since the watcher's initial patch may call $forceUpdate (e.g. inside child
-  // component's mounted hook), which relies on vm._watcher being already defined
+  // since the watcher's initial patch may call $forceUpdate
+  // (e.g. inside child component's mounted hook),
+  // which relies on vm._watcher being already defined
+
+  /*
+  updateComponent = () => {
+    vm._update(vm._render(), hydrating)
+  }
+  */
+  /**
+   * - render 的 watcher，执行 watcher.get
+   *  => updateComponent
+   *  => watcher.value = vm._update(vm._render(), hydrating)
+   * - watcher before，在 vm._update 之前执行 beforeUpdate 钩子
+   */
   new Watcher(vm, updateComponent, noop, {
     before () {
       if (vm._isMounted && !vm._isDestroyed) {
@@ -221,7 +258,12 @@ export function mountComponent (
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
-  if (vm.$vnode == null) {
+  //
+/**
+ * - vm._isMounted = true
+ * - mounted 完成，执行钩子 mounted
+ */
+  if (vm.$vnode == null) { // 保证 mounted 钩子 只执行一次
     vm._isMounted = true
     callHook(vm, 'mounted')
   }

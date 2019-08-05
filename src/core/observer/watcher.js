@@ -50,7 +50,7 @@ export default class Watcher {
     isRenderWatcher?: boolean
   ) {
     this.vm = vm
-    if (isRenderWatcher) {
+    if (isRenderWatcher) { // 监听 render 的 watcher？？？？？
       vm._watcher = this
     }
     vm._watchers.push(this)

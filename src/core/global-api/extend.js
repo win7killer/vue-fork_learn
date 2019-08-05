@@ -30,6 +30,12 @@ export function initExtend (Vue: GlobalAPI) {
       validateComponentName(name)
     }
 
+    /**
+     * @VueComponent 子组件的构造函数
+     * - cid 从 1 开始 【因为 Vue 是 0】
+     * - Sub.options = mergeOptions() // merge Vue.options 和 extends 时候的 extendOptions
+     * - Sub.super 指向 父构造函数【一般是 Vue】
+     */
     const Sub = function VueComponent (options) {
       this._init(options)
     }
@@ -45,6 +51,13 @@ export function initExtend (Vue: GlobalAPI) {
     // For props and computed properties, we define the proxy getters on
     // the Vue instances at extension time, on the extended prototype. This
     // avoids Object.defineProperty calls for each instance created.
+
+    // 对于props和计算属性，我们在扩展原型上定义扩展时Vue实例上的代理getter。
+    // 这样可以避免为每个创建的实例调用object.defineproperty
+
+    /**
+     * - 和 prototype._init 的 initProps 、 initComputed 区别在哪里
+     */
     if (Sub.options.props) {
       initProps(Sub)
     }

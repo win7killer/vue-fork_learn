@@ -113,6 +113,7 @@ export function createComponent (
 
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
+    // Vue.extend 或者 Component.extend
     Ctor = baseCtor.extend(Ctor)
   }
 
@@ -148,9 +149,15 @@ export function createComponent (
 
   // resolve constructor options in case global mixins are applied after
   // component constructor creation
+
+  /**
+   * - // 子组件的时候，调用 resolve 构造函数的 options
+   */
+
   resolveConstructorOptions(Ctor)
 
   // transform component v-model data into props & events
+  // 处理 v-model 到 props && events
   if (isDef(data.model)) {
     transformModel(Ctor.options, data)
   }
@@ -159,6 +166,7 @@ export function createComponent (
   const propsData = extractPropsFromVNodeData(data, Ctor, tag)
 
   // functional component
+  // 函数式组件
   if (isTrue(Ctor.options.functional)) {
     return createFunctionalComponent(Ctor, propsData, data, context, children)
   }
