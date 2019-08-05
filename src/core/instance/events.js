@@ -60,6 +60,15 @@ export function updateComponentListeners (
   target = undefined
 }
 
+
+/**
+ * @eventsMixin
+ * - Vue.prototype.$on
+ * - Vue.prototype.$once
+ * - Vue.prototype.$off
+ * - Vue.prototype.$emit
+ * -
+ */
 export function eventsMixin (Vue: Class<Component>) {
   const hookRE = /^hook:/
   Vue.prototype.$on = function (event: string | Array<string>, fn: Function): Component {

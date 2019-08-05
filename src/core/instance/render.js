@@ -70,6 +70,13 @@ export function setCurrentRenderingInstance (vm: Component) {
   currentRenderingInstance = vm
 }
 
+
+/**
+ * @renderMixin
+ * - installRenderHelpers()
+ * - Vue.prototype.$nextTick
+ * - Vue.prototype._render
+ */
 export function renderMixin (Vue: Class<Component>) {
   // install runtime convenience helpers
   installRenderHelpers(Vue.prototype)
